@@ -46,7 +46,7 @@ public class ClassTypeServiceImpl implements ClassTypeService {
     public void deleteClassTypeById(Long id) {
         Optional<ClassType> optionalClassType = fetchClassTypeById(id);
         ClassType classType = optionalClassType
-                .orElseThrow(() -> new ClassTypeNotFoundException("Class type not found"));
+                .orElseThrow(() -> new ClassTypeNotFoundException("ClassType not found"));
 
         this.classTypeRepository.delete(classType);
     }
