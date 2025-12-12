@@ -6,7 +6,6 @@ import com.whosricardo.gymbookingapi.repository.ClassTypeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ClassTypeServiceImpl implements ClassTypeService {
@@ -27,16 +26,14 @@ public class ClassTypeServiceImpl implements ClassTypeService {
     }
 
     @Override
-    public Optional<ClassType> fetchClassTypeById(Long id) {
-        return this.classTypeRepository.findById(id);
+    public ClassType fetchClassTypeById(Long id) {
+        return this.classTypeRepository.findById(id)
+                .orElseThrow(() -> new ClassTypeNotFoundException("ClassType not found"));
     }
 
     @Override
     public ClassType updateClassType(ClassType classType, Long id) {
-        Optional<ClassType> optionalClassType = fetchClassTypeById(id);
-        ClassType updatedClassType = optionalClassType
-                .orElseThrow(() -> new ClassTypeNotFoundException("ClassType not found"));
-
+        ClassType updatedClassType = fetchClassTypeById(id);
         updatedClassType.setMaxCapacity(classType.getMaxCapacity());
         updatedClassType.setDurationInMinutes(classType.getDurationInMinutes());
         return this.classTypeRepository.save(updatedClassType);
@@ -44,10 +41,7 @@ public class ClassTypeServiceImpl implements ClassTypeService {
 
     @Override
     public void deleteClassTypeById(Long id) {
-        Optional<ClassType> optionalClassType = fetchClassTypeById(id);
-        ClassType classType = optionalClassType
-                .orElseThrow(() -> new ClassTypeNotFoundException("ClassType not found"));
-
-        this.classTypeRepository.delete(classType);
+        ClassType targetDeleteClassType = fetchClassTypeById(id);
+        this.classTypeRepository.delete(targetDeleteClassType);
     }
 }
