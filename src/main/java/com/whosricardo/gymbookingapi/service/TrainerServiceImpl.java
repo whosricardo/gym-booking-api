@@ -3,9 +3,11 @@ package com.whosricardo.gymbookingapi.service;
 import com.whosricardo.gymbookingapi.entity.Trainer;
 import com.whosricardo.gymbookingapi.exception.TrainerNotFoundException;
 import com.whosricardo.gymbookingapi.repository.TrainerRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class TrainerServiceImpl implements TrainerService {
     private final TrainerRepository trainerRepository;
 
