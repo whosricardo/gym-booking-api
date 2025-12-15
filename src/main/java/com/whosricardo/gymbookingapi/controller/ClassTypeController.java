@@ -1,6 +1,7 @@
 package com.whosricardo.gymbookingapi.controller;
 
 import com.whosricardo.gymbookingapi.entity.ClassType;
+import com.whosricardo.gymbookingapi.exception.BadRequestException;
 import com.whosricardo.gymbookingapi.exception.ClassTypeDifferentException;
 import com.whosricardo.gymbookingapi.service.ClassTypeService;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,9 @@ public class ClassTypeController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ClassType saveClassType(@RequestBody ClassType classType) {
+        if (classType.getId() != null) {
+            throw new BadRequestException("ClassType can't have an ID assigned");
+        }
         return this.classTypeService.saveClassType(classType);
     }
 

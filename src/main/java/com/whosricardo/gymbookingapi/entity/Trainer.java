@@ -26,5 +26,5 @@ public class Trainer {
 
     private String phone;
 
-    private boolean isActive;
+    private boolean active = true;
 }

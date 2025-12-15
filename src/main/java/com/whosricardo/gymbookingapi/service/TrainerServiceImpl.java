@@ -34,6 +34,7 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public Trainer updateTrainer(Trainer trainer, Long id) {
         Trainer updatedTrainer = fetchTrainerById(id);
+        updatedTrainer.setName(trainer.getName());
         updatedTrainer.setEmail(trainer.getEmail());
         updatedTrainer.setBio(trainer.getBio());
         updatedTrainer.setPhone(trainer.getPhone());

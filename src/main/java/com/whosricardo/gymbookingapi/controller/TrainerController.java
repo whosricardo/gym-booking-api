@@ -1,6 +1,7 @@
 package com.whosricardo.gymbookingapi.controller;
 
 import com.whosricardo.gymbookingapi.entity.Trainer;
+import com.whosricardo.gymbookingapi.exception.BadRequestException;
 import com.whosricardo.gymbookingapi.exception.TrainerDifferentException;
 import com.whosricardo.gymbookingapi.service.TrainerService;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,9 @@ public class TrainerController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Trainer saveTrainer(@RequestBody Trainer trainer) {
+        if (trainer.getId() != null) {
+            throw new BadRequestException("Trainer can't have an ID assigned");
+        }
         return this.trainerService.saveTrainer(trainer);
     }
 
