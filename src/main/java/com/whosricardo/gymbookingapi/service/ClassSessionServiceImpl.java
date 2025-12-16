@@ -4,6 +4,7 @@ import com.whosricardo.gymbookingapi.entity.ClassSession;
 import com.whosricardo.gymbookingapi.entity.ClassType;
 import com.whosricardo.gymbookingapi.entity.Trainer;
 import com.whosricardo.gymbookingapi.exception.BadRequestException;
+import com.whosricardo.gymbookingapi.exception.NotFoundException;
 import com.whosricardo.gymbookingapi.repository.ClassSessionRepository;
 import org.springframework.stereotype.Service;
 
@@ -61,21 +62,42 @@ public class ClassSessionServiceImpl implements ClassSessionService {
 
     @Override
     public ClassSession fetchClassSessionById(Long id) {
-        return null;
+        return this.classSessionRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("class session not found with this id provided"));
     }
 
     @Override
     public List<ClassSession> fetchClassSessionList() {
-        return List.of();
+        return this.classSessionRepository.findByActive(true);
     }
 
     @Override
     public ClassSession updateClassSession(LocalDateTime startTime, Integer capacity, Long id) {
-        return null;
+        ClassSession classSession = fetchClassSessionById(id);
+
+        if (startTime.isBefore(LocalDateTime.now())) throw new BadRequestException("start time needs to be today or forward");
+
+        if (capacity == null) capacity = classSession.getCapacity();
+        // edge case (capacity that's stored it's null)
+        if (capacity == null) throw new BadRequestException("capacity is not defined for this session");
+        if (capacity <= 0) throw new BadRequestException("capacity needs to be greater than 0");
+        if (classSession.getClassType().getMaxCapacity() != null && capacity > classSession.getClassType().getMaxCapacity()) {
+            throw new BadRequestException("capacity can't be " + " greater than maxCapacity");
+        }
+
+        classSession.setCapacity(capacity);
+        classSession.setStartTime(startTime);
+
+        return this.classSessionRepository.save(classSession);
     }
 
     @Override
     public void deleteClassSessionById(Long id) {
+        ClassSession classSession = fetchClassSessionById(id);
+        if (!classSession.isActive()) throw new BadRequestException("class session already inactive");
 
+        // soft delete
+        classSession.setActive(false);
+        this.classSessionRepository.save(classSession);
     }
 }
