@@ -2,6 +2,7 @@ package com.whosricardo.gymbookingapi.controller;
 
 import com.whosricardo.gymbookingapi.dto.ClassSessionCreateRequest;
 import com.whosricardo.gymbookingapi.dto.ClassSessionResponse;
+import com.whosricardo.gymbookingapi.dto.ClassSessionUpdateRequest;
 import com.whosricardo.gymbookingapi.exception.BadRequestException;
 import com.whosricardo.gymbookingapi.mapper.ClassSessionMapper;
 import com.whosricardo.gymbookingapi.service.ClassSessionService;
@@ -59,5 +60,27 @@ public class ClassSessionController {
                         classSessionCreateRequest.capacity()
                 )
         );
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ClassSessionResponse updateClassSession(@RequestBody ClassSessionUpdateRequest classSessionUpdateRequest,
+                                                   @PathVariable Long id) {
+        if (classSessionUpdateRequest.startTime() == null) {
+            throw new BadRequestException("start time can't be null");
+        }
+        return ClassSessionMapper.toResponse(
+                this.classSessionService.updateClassSession(
+                        classSessionUpdateRequest.startTime(),
+                        classSessionUpdateRequest.capacity(),
+                        id
+                )
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteClassSessionById(@PathVariable Long id) {
+        this.classSessionService.deleteClassSessionById(id);
     }
 }
