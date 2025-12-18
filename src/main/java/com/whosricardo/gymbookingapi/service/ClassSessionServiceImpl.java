@@ -62,13 +62,13 @@ public class ClassSessionServiceImpl implements ClassSessionService {
 
     @Override
     public ClassSession fetchClassSessionById(Long id) {
-        return this.classSessionRepository.findById(id)
+        return this.classSessionRepository.findActiveByIdWithTrainerAndClassType(id)
                 .orElseThrow(() -> new NotFoundException("class session not found with this id provided"));
     }
 
     @Override
     public List<ClassSession> fetchClassSessionList() {
-        return this.classSessionRepository.findByActive(true);
+        return this.classSessionRepository.findAllActiveWithTrainerAndClassType();
     }
 
     @Override
@@ -94,8 +94,6 @@ public class ClassSessionServiceImpl implements ClassSessionService {
     @Override
     public void deleteClassSessionById(Long id) {
         ClassSession classSession = fetchClassSessionById(id);
-        if (!classSession.isActive()) throw new BadRequestException("class session already inactive");
-
         // soft delete
         classSession.setActive(false);
         this.classSessionRepository.save(classSession);

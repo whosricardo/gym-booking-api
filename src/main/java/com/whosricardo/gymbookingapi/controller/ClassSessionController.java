@@ -1,11 +1,14 @@
 package com.whosricardo.gymbookingapi.controller;
 
 import com.whosricardo.gymbookingapi.dto.ClassSessionCreateRequest;
-import com.whosricardo.gymbookingapi.entity.ClassSession;
+import com.whosricardo.gymbookingapi.dto.ClassSessionResponse;
 import com.whosricardo.gymbookingapi.exception.BadRequestException;
+import com.whosricardo.gymbookingapi.mapper.ClassSessionMapper;
 import com.whosricardo.gymbookingapi.service.ClassSessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/class-sessions")
@@ -16,9 +19,26 @@ public class ClassSessionController {
         this.classSessionService = classSessionService;
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ClassSessionResponse getClassSession(@PathVariable Long id) {
+        return ClassSessionMapper.toResponse(
+                this.classSessionService.fetchClassSessionById(id)
+        );
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<ClassSessionResponse> getClassSessions() {
+        return this.classSessionService.fetchClassSessionList()
+                .stream()
+                .map(ClassSessionMapper::toResponse)
+                .toList();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ClassSession saveClassSession(@RequestBody ClassSessionCreateRequest classSessionCreateRequest) {
+    public ClassSessionResponse saveClassSession(@RequestBody ClassSessionCreateRequest classSessionCreateRequest) {
         if (classSessionCreateRequest.trainerId() == null) {
             throw new BadRequestException("class session need's a trainer id");
         }
@@ -31,11 +51,13 @@ public class ClassSessionController {
             throw new BadRequestException("class session must have an start time");
         }
 
-        return this.classSessionService.createClassSession(
-                classSessionCreateRequest.trainerId(),
-                classSessionCreateRequest.classTypeId(),
-                classSessionCreateRequest.startTime(),
-                classSessionCreateRequest.capacity()
+        return ClassSessionMapper.toResponse(
+                this.classSessionService.createClassSession(
+                        classSessionCreateRequest.trainerId(),
+                        classSessionCreateRequest.classTypeId(),
+                        classSessionCreateRequest.startTime(),
+                        classSessionCreateRequest.capacity()
+                )
         );
     }
 }
