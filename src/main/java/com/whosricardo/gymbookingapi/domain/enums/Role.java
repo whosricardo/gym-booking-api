@@ -1,4 +1,4 @@
-package com.whosricardo.gymbookingapi.domains.enums;
+package com.whosricardo.gymbookingapi.domain.enums;
 
 public enum Role {
     ADMIN,
