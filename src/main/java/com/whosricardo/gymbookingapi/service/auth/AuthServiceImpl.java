@@ -1,10 +1,12 @@
 package com.whosricardo.gymbookingapi.service.auth;
 
 import com.whosricardo.gymbookingapi.domain.enums.Role;
+import com.whosricardo.gymbookingapi.dto.UserLoginRequest;
 import com.whosricardo.gymbookingapi.dto.UserRegisterRequest;
 import com.whosricardo.gymbookingapi.dto.UserResponse;
 import com.whosricardo.gymbookingapi.entity.User;
 import com.whosricardo.gymbookingapi.exception.BadRequestException;
+import com.whosricardo.gymbookingapi.exception.NotFoundException;
 import com.whosricardo.gymbookingapi.mapper.UserMapper;
 import com.whosricardo.gymbookingapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,5 +44,23 @@ public class AuthServiceImpl implements AuthService {
         User savedUser = this.userRepository.save(newUser);
 
         return UserMapper.toResponse(savedUser);
+    }
+
+    @Override
+    public UserResponse login(UserLoginRequest userLoginRequest) {
+        if (userLoginRequest.email() == null) throw new BadRequestException("email can't be null");
+        if (userLoginRequest.password() == null) throw new BadRequestException("password can't be null");
+
+        String normalizedEmail = userLoginRequest.email().trim().toLowerCase();
+
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new BadRequestException("invalid credentials"));
+
+        if (!user.isActive()) throw new BadRequestException("invalid credentials");
+
+        if (!passwordEncoder.matches(userLoginRequest.password(), user.getPasswordHash()))
+            throw new BadRequestException("invalid credentials");
+
+        return UserMapper.toResponse(user);
     }
 }
