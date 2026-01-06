@@ -2,7 +2,6 @@ package com.whosricardo.gymbookingapi.controller.auth;
 
 import com.whosricardo.gymbookingapi.dto.UserRegisterRequest;
 import com.whosricardo.gymbookingapi.dto.UserResponse;
-import com.whosricardo.gymbookingapi.mapper.UserMapper;
 import com.whosricardo.gymbookingapi.service.auth.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
