@@ -1,5 +1,6 @@
 package com.whosricardo.gymbookingapi.controller.auth;
 
+import com.whosricardo.gymbookingapi.dto.UserLoginRequest;
 import com.whosricardo.gymbookingapi.dto.UserRegisterRequest;
 import com.whosricardo.gymbookingapi.dto.UserResponse;
 import com.whosricardo.gymbookingapi.service.auth.AuthService;
@@ -19,5 +20,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse register(@RequestBody UserRegisterRequest userRegisterRequest) {
         return this.authService.register(userRegisterRequest);
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse login(@RequestBody UserLoginRequest userLoginRequest) {
+        return this.authService.login(userLoginRequest);
     }
 }

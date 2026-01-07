@@ -6,7 +6,6 @@ import com.whosricardo.gymbookingapi.dto.UserRegisterRequest;
 import com.whosricardo.gymbookingapi.dto.UserResponse;
 import com.whosricardo.gymbookingapi.entity.User;
 import com.whosricardo.gymbookingapi.exception.BadRequestException;
-import com.whosricardo.gymbookingapi.exception.NotFoundException;
 import com.whosricardo.gymbookingapi.mapper.UserMapper;
 import com.whosricardo.gymbookingapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
