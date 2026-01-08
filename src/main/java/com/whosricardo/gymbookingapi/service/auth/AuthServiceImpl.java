@@ -4,10 +4,12 @@ import com.whosricardo.gymbookingapi.domain.enums.Role;
 import com.whosricardo.gymbookingapi.dto.UserLoginRequest;
 import com.whosricardo.gymbookingapi.dto.UserRegisterRequest;
 import com.whosricardo.gymbookingapi.dto.UserResponse;
+import com.whosricardo.gymbookingapi.dto.auth.AuthResponse;
 import com.whosricardo.gymbookingapi.entity.User;
 import com.whosricardo.gymbookingapi.exception.BadRequestException;
 import com.whosricardo.gymbookingapi.mapper.UserMapper;
 import com.whosricardo.gymbookingapi.repository.UserRepository;
+import com.whosricardo.gymbookingapi.service.auth.jwt.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +17,12 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -46,7 +50,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserResponse login(UserLoginRequest userLoginRequest) {
+    public AuthResponse login(UserLoginRequest userLoginRequest) {
         if (userLoginRequest.email() == null) throw new BadRequestException("email can't be null");
         if (userLoginRequest.password() == null) throw new BadRequestException("password can't be null");
 
@@ -60,6 +64,11 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(userLoginRequest.password(), user.getPasswordHash()))
             throw new BadRequestException("invalid credentials");
 
-        return UserMapper.toResponse(user);
+        String subject = user.getEmail();
+        String role = user.getRole().name();
+
+        String token = jwtService.generateToken(subject, role);
+
+        return new AuthResponse(token, UserMapper.toResponse(user));
     }
 }
