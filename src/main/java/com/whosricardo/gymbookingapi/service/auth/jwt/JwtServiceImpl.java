@@ -1,6 +1,7 @@
 package com.whosricardo.gymbookingapi.service.auth.jwt;
 
 import com.whosricardo.gymbookingapi.config.security.JwtProperties;
+import com.whosricardo.gymbookingapi.exception.BadRequestException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
@@ -27,6 +28,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(String subject, String role) {
+        if (subject == null || subject.isBlank()) throw new BadRequestException("subject can't be null/blank");
+        if (role == null || role.isBlank()) throw new BadRequestException("role can't be null/blank");
+
         Instant now = Instant.now();
         Instant expiresAt = now.plusSeconds(jwtProperties.getExpirationMinutes() * 60);
 
